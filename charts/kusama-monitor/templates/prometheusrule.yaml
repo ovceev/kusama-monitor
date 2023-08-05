@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  groups:
+    - name: kusama.rules
+      rules:
+        - alert: LowKusamaFunds
+          expr: kusama_account_funds < 60000000000000 # 53276988188671
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            message: 'The Kusama account funds have dropped below 60000000000000.'
+

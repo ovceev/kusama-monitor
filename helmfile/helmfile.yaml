@@ -1,0 +1,18 @@
+bases:
+  - ./common/defaults.yaml
+  - ./common/repositories.yaml
+
+releases:
+  - name: kusama-monitor
+    namespace: kusama-monitor
+    chart: ../charts/kusama-monitor
+    values:
+    - "./values/kusama-monitor.yaml" 
+  - name: kube-prometheus-stack
+    namespace: monitoring
+    chart: prometheus-community/kube-prometheus-stack
+    values:
+    - "./values/kube-prometheus-stack.yaml" 
+    disableValidation: true
+    disableValidationOnInstall: true # to avoid the issue with missing CRDs
+    version: 48.3.1
