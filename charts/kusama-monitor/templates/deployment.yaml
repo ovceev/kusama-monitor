@@ -25,3 +25,11 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /app/config/config.yaml
+              subPath: config.yaml
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}
