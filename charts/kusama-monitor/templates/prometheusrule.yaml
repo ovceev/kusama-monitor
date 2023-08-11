@@ -5,13 +5,15 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   groups:
-    - name: kusama.rules
+    - name: kusama-alert-rules
       rules:
-        - alert: LowKusamaFunds
-          expr: kusama_account_funds < 60000000000000 # 53276988188671
+        {{- range .Values.wallets }}
+        - alert: LowKusamaFunds{{ .address }}
+          expr: kusama_account_funds{address="{{ .address }}"} < {{ .threshold }}
           for: 5m
           labels:
             severity: critical
           annotations:
-            message: 'The Kusama account funds have dropped below 60000000000000.'
-
+            summary: "Low funds alert for address {{ .address }}"
+            description: "{{ .address }} has less than {{ .threshold }} KSM funds."
+        {{- end }}

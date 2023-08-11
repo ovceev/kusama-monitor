@@ -9,4 +9,9 @@ service:
   type: ClusterIP
   port: 3000
 
-
+#! You can wallets for adding addresses to monitor
+# wallets:
+#   - address: defaultAddress1
+#     threshold: 100
+#   - address: defaultAddress2
+#     threshold: 200

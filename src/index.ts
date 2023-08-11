@@ -2,6 +2,8 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Gauge } from 'prom-client';
 import express from 'express';
 import { register } from 'prom-client';
+import fs from 'fs';
+import yaml from 'js-yaml';
 
 // Create a gauge for Prometheus
 const fundsGauge = new Gauge({
@@ -10,12 +12,27 @@ const fundsGauge = new Gauge({
   labelNames: ['address'],
 });
 
-// Define a list of accounts you want to monitor
-const accountsToMonitor = [
-  'Edyfdyoi4KJVdXUJ3SU3nuZYMpg13HHa1SWYtPDCV8UPdxy',
-  'GaK38GT7LmgCpRSTRdDC2LeiMaV9TJmx8NmQcb9L3cJ3fyX',
-  // add more accounts here
-];
+interface WalletConfig {
+  address: string;
+  threshold: number;
+}
+
+interface Config {
+  wallets: WalletConfig[];
+}
+
+// Read a list of accounts you want to monitor from config.yaml
+let config: Config;
+try {
+  const configFile = fs.readFileSync('./config/config.yaml', 'utf-8');
+  config = yaml.load(configFile) as Config;
+} catch (err) {
+  console.error("Failed to read or parse the configuration file.", err);
+  process.exit(1);
+}
+
+const accountsToMonitor: { address: string, threshold: number }[] = config.wallets;
+
 
 async function main() {
   // Connect to the Kusama network
@@ -27,13 +44,13 @@ async function main() {
     console.log(`New block #${header.number}: ${header.hash}`);
 
     for (const account of accountsToMonitor) {
-      const accountInfo = await api.query.system.account(account);
+      const accountInfo = await api.query.system.account(account.address);
   
       // Bypass TypeScript type checking by asserting to 'any'
       const freeBalance = (accountInfo as any).data.free.toBn().toNumber();
   
       // Update the Prometheus gauge with the free funds of the account
-      fundsGauge.set({ address: account }, freeBalance);
+      fundsGauge.set({ address: account.address }, freeBalance);
     }
   });
 

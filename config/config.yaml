@@ -1,10 +1,5 @@
-image:
-  repository: ovceev/kusama-monitor
-  tag: "0.0.1"
-
 wallets:
   - address: "Edyfdyoi4KJVdXUJ3SU3nuZYMpg13HHa1SWYtPDCV8UPdxy"
-    threshold: 500000000000000
+    threshold: 300000000000000
   - address: "GaK38GT7LmgCpRSTRdDC2LeiMaV9TJmx8NmQcb9L3cJ3fyX"
     threshold: 60000000000000
-
